@@ -16,7 +16,6 @@ public class Util {
 		} catch (Exception e) {
 			is = Boolean.FALSE;
 		}
-		
 		return is;
 	}
 }
