@@ -1,48 +1,61 @@
+
 package com.capgemini.serviciosya.service.test;
 
 
-import com.capgemini.serviciosya.dao.*;
-import com.capgemini.serviciosya.beans.domain.*;
-import com.capgemini.serviciosya.service.*;
-
-import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.serviciosya.beans.domain.Occupation;
+import com.capgemini.serviciosya.dao.IOccupationDao;
+import com.capgemini.serviciosya.dao.OccupationDaoJDBC;
+
+import java.util.List;
+
+
 public class OccupationServiceTest {
 
-	private OccupationService occupationService = new OccupationService ();
 
-    private IOccupationDao occupationDao = new OccupationDaoMemory ();
+    private static final Logger logger = Logger.getLogger (OccupationServiceTest.class);
 
 
     @Test
-    public void testFindAllOccupations () {
+    public void testAdd () {
+
+        try {
+
+            // Insert new value.
+            logger.info ("Starting occupation add test.");
+            IOccupationDao dao = new OccupationDaoJDBC ();
+
+            logger.debug ("Inserting new occupation.");
+            Occupation c = new Occupation ();
+            c.setName ("Encantador de suegras.");
+            c.setDescription ("Amo el peligro");
+            dao.add (c);
+
+           logger.debug ("Checking test result.");
+           List<Occupation> list = dao.findAllOccupations ();
+
+           boolean r = Boolean.FALSE;
+
+           for (Occupation item: list) {
+
+               if (item.getName ().equals (c.getName ())) {
+                   r = Boolean.TRUE;
+                   break;
+               }
+           }
+
+           logger.info ("Finishing the test...");
+           Assert.assertTrue ("Failure inserting new Occupation.", r);
 
 
-        this.occupationService.setOccupationDao (this.occupationDao);
+        } catch (Exception e) {
 
-        List<Occupation> list = this.occupationService.findAllOccupations ();
-
-        Assert.assertFalse (list.isEmpty ());
-    }
-
-    @Test
-    public void testAddOccupation () {
-
-
-        this.occupationService.setOccupationDao (this.occupationDao);
-
-        Occupation o = new Occupation ("1", "Catador de Ron", "Beber alcohol...");
-
-        List<Occupation> init = this.occupationDao.findAllOccupations ();
-
-        this.occupationService.addOccupation (o);
-
-        List<Occupation> end = this.occupationDao.findAllOccupations ();
-
-        Assert.assertTrue (init.size()+1 == end.size());
+            Assert.assertNull (e);
+        }
     }
 
 }
